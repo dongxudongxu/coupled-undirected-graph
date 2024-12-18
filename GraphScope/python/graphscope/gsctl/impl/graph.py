@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright 2024 Alibaba Group Holding Limited. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+from typing import List
+
+import graphscope.flex.rest
+from graphscope.flex.rest import EdgeType
+from graphscope.flex.rest import Graph
+from graphscope.flex.rest import ModelSchema
+from graphscope.flex.rest import VertexType
+from graphscope.gsctl.config import get_current_context
+
+
+def list_graphs() -> List[Graph]:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        graphs = api_instance.list_graphs()
+        return graphs
+
+
+def get_schema_by_name(graph_name: str) -> ModelSchema:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        schema = api_instance.get_schema(graph_name)
+        return schema
+
+
+def create_graph(graph: dict) -> str:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        return api_instance.create_graph(Graph.from_dict(graph))
+
+
+def delete_graph_by_name(graph_name: str) -> str:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        return api_instance.delete_graph(graph_name)
+
+
+def create_vertex_type(graph_name: str, vtype: dict) -> str:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        return api_instance.create_vertex_type(graph_name, VertexType.from_dict(vtype))
+
+
+def create_edge_type(graph_name: str, etype: dict) -> str:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        return api_instance.create_edge_type(graph_name, EdgeType.from_dict(etype))
+
+
+def delete_vertex_type(graph_name: str, vertex_type: str) -> str:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        return api_instance.delete_vertex_type(graph_name, vertex_type)
+
+
+def delete_edge_type(
+    graph_name: str,
+    edge_type: str,
+    source_vertex_type: str,
+    destination_vertex_type: str,
+) -> str:
+    context = get_current_context()
+    with graphscope.flex.rest.ApiClient(
+        graphscope.flex.rest.Configuration(context.coordinator_endpoint)
+    ) as api_client:
+        api_instance = graphscope.flex.rest.GraphApi(api_client)
+        return api_instance.delete_edge_type(
+            graph_name, edge_type, source_vertex_type, destination_vertex_type
+        )

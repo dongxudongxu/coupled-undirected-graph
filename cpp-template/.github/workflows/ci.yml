@@ -1,0 +1,49 @@
+name: C++ Library Template CI
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  # Trigger the worflow on push or pull request by only for the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, macos-10.15]
+    steps:
+      - uses: actions/checkout@v2.3.2
+
+      - name: Install GraphScope
+        run: |
+          pip3 install graphscope pytest --user
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: false
+
+      - name: Build Libraries
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          mkdir build && cd build && cmake .. && make -j4
+
+      - name: Test App on GraphScope
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          # package vertex_data context app
+          cd build && make package
+          # test
+          make test
